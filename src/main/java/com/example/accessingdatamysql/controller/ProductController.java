@@ -3,6 +3,7 @@ package com.example.accessingdatamysql.controller;
 import com.example.accessingdatamysql.entity.Product;
 import com.example.accessingdatamysql.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +24,19 @@ public class ProductController {
         return service.saveProducts(products);
     }
 
-    @GetMapping("/products")
+    @RequestMapping(value="/products",method = RequestMethod.GET)
+    @ResponseBody
     public List<Product> findAllProducts(){
         return service.getProducts();
     }
 
-    @GetMapping("/product/{id}")
+    @RequestMapping(value="/product/id/{id}",method = RequestMethod.GET)
+    @ResponseBody
     public Product findProductById(@PathVariable int id){
         return service.getProductById(id);
     }
 
-    @GetMapping("/product/{name}")
+    @GetMapping("/product/name/{name}")
     public Product findProductByName(@PathVariable String name){
         return service.getProductByName(name);
     }
