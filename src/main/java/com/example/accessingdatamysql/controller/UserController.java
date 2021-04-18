@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -19,17 +20,17 @@ public class UserController {
         return "Hi " + user.getName() + " your Registration process successfully completed";
     }
 
-    @GetMapping("/getAllUsers")
+    @GetMapping("")
     public List<User> findAllUsers() {
         return service.findAllUsers();
     }
 
-    @GetMapping("/findUser/{email}")
+    @GetMapping("/{email}")
     public List<User> findUser(@PathVariable String email) {
         return service.findUser(email);
     }
 
-    @DeleteMapping("/cancel/{id}")
+    @DeleteMapping("/{id}")
     public List<User> cancelRegistration(@PathVariable int id) {
         service.cancelRegistration(id);
         return service.findAllUsers();
