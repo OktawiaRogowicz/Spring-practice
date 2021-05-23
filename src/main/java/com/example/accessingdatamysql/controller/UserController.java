@@ -11,6 +11,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    @GetMapping("/home")
+    public String showUser(){
+        return "app works";
+    }
+
     @Autowired
     private UserService service;
 
