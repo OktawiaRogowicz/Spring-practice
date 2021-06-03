@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
+@Component
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private JWTTokenProvider jwtTokenProvider;
@@ -31,7 +33,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.OK.value());
         } else {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if(authorizationHeader == null || authorizationHeader.startsWith(TOKEN_PREFIX)) {
+            if(authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
                 filterChain.doFilter(request, response);
                 return;
             }
