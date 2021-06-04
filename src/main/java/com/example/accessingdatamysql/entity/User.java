@@ -28,7 +28,7 @@ public class User implements Serializable {
     private Date lastLoginDateDisplay;
     private Date joinDate;
 
-    private String[] roles; // ROLE_USER{ delete, update, create }, ROLE_ADMIN
+    private String role; // ROLE_USER{ delete, update, create }, ROLE_ADMIN
     private String[] authorities; // delete, update, create
 
     private boolean isActive;

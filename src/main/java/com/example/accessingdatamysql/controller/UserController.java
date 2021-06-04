@@ -1,6 +1,8 @@
 package com.example.accessingdatamysql.controller;
 
 import com.example.accessingdatamysql.entity.User;
+import com.example.accessingdatamysql.exception.domain.ExceptionHandling;
+import com.example.accessingdatamysql.exception.domain.UserNotFoundException;
 import com.example.accessingdatamysql.service.UserService;
 import com.example.accessingdatamysql.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping(path = {"/", "/users"})
+public class UserController extends ExceptionHandling {
 
     @GetMapping("/home")
-    public String showUser(){
-        return "app works";
+    public String showUser() throws UserNotFoundException {
+        throw new UserNotFoundException("The user was not found");
+        // return "app works";
     }
-
+/*
     @Autowired
     private UserServiceImpl service;
 
@@ -41,5 +44,5 @@ public class UserController {
         service.cancelRegistration(id);
         return service.findAllUsers();
     }
-
+*/
 }
