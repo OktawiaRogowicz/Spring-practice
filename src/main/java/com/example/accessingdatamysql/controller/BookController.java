@@ -43,16 +43,6 @@ public class BookController extends ExceptionHandling {
         this.bookService = bookService;
     }
 
-    private Long id;
-    private String bookId;
-    private String title;
-    private String author;
-    private String publishingHouse;
-    private String translator;
-    private String bookImageUrl;
-    private int releaseYear;
-
-
     @PostMapping("/add")
     public ResponseEntity<Book> addNewBook(@RequestParam("bookId") String bookId,
                                            @RequestParam("title") String title,
