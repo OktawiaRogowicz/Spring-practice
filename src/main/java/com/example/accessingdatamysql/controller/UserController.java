@@ -13,6 +13,8 @@ import com.example.accessingdatamysql.service.UserService;
 import com.example.accessingdatamysql.service.impl.UserServiceImpl;
 import com.example.accessingdatamysql.utility.JWTTokenProvider;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
 @RequestMapping(path = {"/", "/users"})
+@CrossOrigin("http://localhost:4200")
 public class UserController extends ExceptionHandling {
 
     public static final String EMAIL_SENT = "An email with a new password was sent to: (not really) ";
@@ -44,6 +47,7 @@ public class UserController extends ExceptionHandling {
     private UserService userService;
     private AuthenticationManager authenticationManager;
     private JWTTokenProvider jwtTokenProvider;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public UserController(UserService userService, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
@@ -52,10 +56,12 @@ public class UserController extends ExceptionHandling {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody User user) {
         authenticate(user.getEmail(), user.getPassword());
         User loginUser = userService.findUserByEmail(user.getEmail());
+        logger.info(loginUser.getPassword());
+        logger.info(user.getPassword());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loginUser, jwtHeader, OK);
@@ -165,30 +171,5 @@ public class UserController extends ExceptionHandling {
     private void authenticate(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
     }
-/*
-    @Autowired
-    private UserServiceImpl service;
 
-    @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        service.register(user);
-        return "Hi " + user.getName() + " your Registration process successfully completed";
-    }
-
-    @GetMapping("")
-    public List<User> findAllUsers() {
-        return service.findAllUsers();
-    }
-
-    @GetMapping("/{email}")
-    public User findUser(@PathVariable String email) {
-        return service.findUser(email);
-    }
-
-    @DeleteMapping("/{id}")
-    public List<User> cancelRegistration(@PathVariable Long id) {
-        service.cancelRegistration(id);
-        return service.findAllUsers();
-    }
-*/
 }

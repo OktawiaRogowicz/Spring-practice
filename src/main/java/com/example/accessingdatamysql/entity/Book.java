@@ -1,8 +1,8 @@
-/*package com.example.accessingdatamysql.entity;
+package com.example.accessingdatamysql.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -12,8 +12,11 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
+@Table(name="BOOK_TBL")
 public class Book {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, updatable = false)
     private Long id;
     private String bookId;
     private String title;
@@ -24,4 +27,3 @@ public class Book {
     private int releaseYear;
 
 }
-*/

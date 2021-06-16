@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userRepository.save(user);
             UserPrincipal userPrincipal = new UserPrincipal(user);
             logger.info(RETURNING_FOUND_USER_BY_EMAIL + email);
+            logger.info(user.getPassword());
             return userPrincipal;
         }
     }
