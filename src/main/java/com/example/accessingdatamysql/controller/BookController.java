@@ -7,12 +7,15 @@ import com.example.accessingdatamysql.exception.domain.EmailNotFoundException;
 import com.example.accessingdatamysql.exception.domain.ExceptionHandling;
 import com.example.accessingdatamysql.exception.domain.UserNotFoundException;
 import com.example.accessingdatamysql.service.BookService;
+import com.example.accessingdatamysql.service.UserService;
+import com.example.accessingdatamysql.utility.JWTTokenProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,36 +38,39 @@ public class BookController extends ExceptionHandling {
 
     public static final String BOOK_DELETED_SUCCESSFULLY = "Book deleted successfully";
     private BookService bookService;
+    private UserService userService;
+    private AuthenticationManager authenticationManager;
+    private JWTTokenProvider jwtTokenProvider;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, UserService userService, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
         this.bookService = bookService;
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Book> addNewBook(@RequestParam("bookId") String bookId,
-                                           @RequestParam("title") String title,
+    public ResponseEntity<Book> addNewBook(@RequestParam("title") String title,
                                            @RequestParam("author") String author,
                                            @RequestParam("publishingHouse") String publishingHouse,
                                            @RequestParam("translator") String translator,
-                                           @RequestParam("relaeaseYear") int releaseYear,
+                                           @RequestParam("releaseYear") int releaseYear,
                                            @RequestParam(value = "bookImage", required = false) MultipartFile profileImage) throws UserNotFoundException, IOException, EmailExistsException {
-        Book newBook = bookService.addNewBook(bookId, title, author, publishingHouse, translator, profileImage, releaseYear);
+        Book newBook = bookService.addNewBook(title, author, publishingHouse, translator, profileImage, releaseYear);
         return new ResponseEntity<>(newBook, OK);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Book> addNewBook(@RequestParam("bookId") String bookId,
-                                           @RequestParam("currentTitle") String currentTitle,
+    public ResponseEntity<Book> updateBook(@RequestParam("currentTitle") String currentTitle,
                                            @RequestParam("newTitle") String newTitle,
                                            @RequestParam("author") String author,
                                            @RequestParam("publishingHouse") String publishingHouse,
                                            @RequestParam("translator") String translator,
                                            @RequestParam("relaeaseYear") int releaseYear,
                                            @RequestParam(value = "bookImage", required = false) MultipartFile profileImage) throws UserNotFoundException, IOException, EmailExistsException {
-        Book updatedBook = bookService.updateBook(bookId, currentTitle, newTitle, author, publishingHouse, translator, profileImage, releaseYear);
+        Book updatedBook = bookService.updateBook(currentTitle, newTitle, author, publishingHouse, translator, profileImage, releaseYear);
         return new ResponseEntity<>(updatedBook, OK);
     }
 
@@ -81,13 +87,13 @@ public class BookController extends ExceptionHandling {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('book:delete')")
+    // @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteBook(@PathVariable("id") long id) {
         bookService.deleteBook(id);
         return response(OK, BOOK_DELETED_SUCCESSFULLY);
     }
 
-    @PostMapping("/updateProfileImage")
+    @PostMapping("/updateBookImage")
     public ResponseEntity<Book> updateProfileImage(@RequestParam("title") String title,
                                                    @RequestParam("bookImage") MultipartFile bookImage) throws EmailNotFoundException, EmailExistsException, UserNotFoundException, IOException {
         Book book = bookService.updateBookImage(title, bookImage);
@@ -104,13 +110,13 @@ public class BookController extends ExceptionHandling {
         return new ResponseEntity<>(body, httpStatus);
     }
 
-    @GetMapping(path = "/image/{email}/{fileName}", produces = IMAGE_JPEG_VALUE)
+    @GetMapping(path = "/image/{title}/{fileName}", produces = IMAGE_JPEG_VALUE)
     public byte[] getProfileImage(@PathVariable("email") String email,
                                   @PathVariable("fileName") String fileName) throws IOException {
         return Files.readAllBytes(Paths.get(USER_FOLDER + email + FORWARD_SLASH + fileName));
     }
 
-    @GetMapping(path = "/image/profile/{email}", produces = IMAGE_JPEG_VALUE)
+    @GetMapping(path = "/image/profile/{title}", produces = IMAGE_JPEG_VALUE)
     public byte[] getTempProfileImage(@PathVariable("email") String email) throws IOException {
         URL url = new URL(TEMP_PROFILE_IMAGE_BASE_URL + email);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

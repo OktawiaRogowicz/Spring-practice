@@ -57,7 +57,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book addNewBook(String bookId, String title, String author, String publishingHouse, String translator, MultipartFile bookImage, int releaseYear) throws EmailExistsException, UserNotFoundException, IOException {
+    public Book addNewBook(String title, String author, String publishingHouse, String translator, MultipartFile bookImage, int releaseYear) throws EmailExistsException, UserNotFoundException, IOException {
         validateNewTitle(EMPTY, title);
         Book book = new Book();
         book.setId(generateBookId());
@@ -72,9 +72,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book updateBook(String bookId, String currentTitle, String newTitle, String author, String publishingHouse, String translator, MultipartFile bookImage, int releaseYear) throws IOException, EmailExistsException, UserNotFoundException {
+    public Book updateBook(String currentTitle, String newTitle, String author, String publishingHouse, String translator, MultipartFile bookImage, int releaseYear) throws IOException, EmailExistsException, UserNotFoundException {
         Book currentBook = validateNewTitle(currentTitle, newTitle);
-
         currentBook.setTitle(newTitle);
         currentBook.setAuthor(author);
         currentBook.setPublishingHouse(publishingHouse);

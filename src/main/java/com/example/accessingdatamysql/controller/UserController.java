@@ -64,6 +64,7 @@ public class UserController extends ExceptionHandling {
         logger.info(user.getPassword());
         UserPrincipal userPrincipal = new UserPrincipal(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
+        loginUser.setActive(true);
         return new ResponseEntity<>(loginUser, jwtHeader, OK);
     }
 
@@ -87,7 +88,7 @@ public class UserController extends ExceptionHandling {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<User> addNewUser(@RequestParam("currentEmail") String currentEmail,
+    public ResponseEntity<User> updateUser(@RequestParam("currentEmail") String currentEmail,
                                            @RequestParam("name") String name,
                                            @RequestParam("surname") String surname,
                                            @RequestParam("email") String email,
@@ -119,7 +120,7 @@ public class UserController extends ExceptionHandling {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('user:delete')")
+    // @PreAuthorize("hasAnyAuthority('user:delete')")
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id) {
         userService.deleteUser(id);
         return response(OK, USER_DELETED_SUCCESSFULLY);
